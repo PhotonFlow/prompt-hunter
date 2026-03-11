@@ -1,0 +1,105 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "prompt-hunter"
+version = "0.1.0"
+description = "Automated prompt discovery for open-vocabulary object detectors — uses a vision-language model to generate candidate prompts and a grounding model to evaluate them in a closed-loop optimization system."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [
+    { name = "Alan Peng" },
+]
+keywords = [
+    "object-detection",
+    "prompt-engineering",
+    "zero-shot-detection",
+    "open-vocabulary",
+    "vlm",
+    "grounding",
+    "automated-prompt-discovery",
+    "vision-language-model",
+    "computer-vision",
+    "deep-learning",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+    "Typing :: Typed",
+]
+
+dependencies = [
+    "torch>=2.0",
+    "transformers>=4.36",
+    "Pillow>=9.0",
+    "numpy>=1.24",
+    "opencv-python>=4.8",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "mypy>=1.0",
+    "ruff>=0.1",
+    "pre-commit>=3.0",
+]
+
+[project.scripts]
+prompt-hunter = "prompt_hunter.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/alanpeng/prompt-hunter"
+Repository = "https://github.com/alanpeng/prompt-hunter"
+Issues = "https://github.com/alanpeng/prompt-hunter/issues"
+Documentation = "https://github.com/alanpeng/prompt-hunter#readme"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/prompt_hunter"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade
+    "ANN",  # flake8-annotations
+    "D",    # pydocstyle
+]
+ignore = [
+    "ANN101",  # missing-type-self
+    "ANN102",  # missing-type-cls
+    "D100",    # missing module docstring (we have them, but not everywhere)
+    "D104",    # missing __init__ docstring
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
