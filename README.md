@@ -6,7 +6,7 @@
 
 *Stop guessing prompts. Let AI find the best ones for you.*
 
-[![CI](https://github.com/alanpeng/prompt-hunter/actions/workflows/ci.yml/badge.svg)](https://github.com/alanpeng/prompt-hunter/actions)
+[![CI](https://github.com/PhotonFlow/prompt-hunter/actions/workflows/ci.yml/badge.svg)](https://github.com/PhotonFlow/prompt-hunter/actions)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
@@ -59,7 +59,7 @@ pip install prompt-hunter
 
 **From source:**
 ```bash
-git clone https://github.com/alanpeng/prompt-hunter.git
+git clone https://github.com/PhotonFlow/prompt-hunter.git
 cd prompt-hunter
 pip install -e ".[dev]"
 ```

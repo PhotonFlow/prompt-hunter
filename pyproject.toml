@@ -60,10 +60,10 @@ dev = [
 prompt-hunter = "prompt_hunter.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/alanpeng/prompt-hunter"
-Repository = "https://github.com/alanpeng/prompt-hunter"
-Issues = "https://github.com/alanpeng/prompt-hunter/issues"
-Documentation = "https://github.com/alanpeng/prompt-hunter#readme"
+Homepage = "https://github.com/PhotonFlow/prompt-hunter"
+Repository = "https://github.com/PhotonFlow/prompt-hunter"
+Issues = "https://github.com/PhotonFlow/prompt-hunter/issues"
+Documentation = "https://github.com/PhotonFlow/prompt-hunter#readme"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/prompt_hunter"]

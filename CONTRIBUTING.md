@@ -7,7 +7,7 @@ for submitting changes.
 
 ```bash
 # Clone
-git clone https://github.com/alanpeng/prompt-hunter.git
+git clone https://github.com/PhotonFlow/prompt-hunter.git
 cd prompt-hunter
 
 # Install in editable mode with dev dependencies
