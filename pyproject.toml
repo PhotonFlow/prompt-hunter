@@ -80,18 +80,7 @@ select = [
     "I",    # isort
     "B",    # flake8-bugbear
     "UP",   # pyupgrade
-    "ANN",  # flake8-annotations
-    "D",    # pydocstyle
 ]
-ignore = [
-    "ANN101",  # missing-type-self
-    "ANN102",  # missing-type-cls
-    "D100",    # missing module docstring (we have them, but not everywhere)
-    "D104",    # missing __init__ docstring
-]
-
-[tool.ruff.lint.pydocstyle]
-convention = "numpy"
 
 [tool.mypy]
 python_version = "3.10"

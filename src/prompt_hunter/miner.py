@@ -24,9 +24,9 @@ yields more diverse (less deterministic) completions.
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
+from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, List, Optional, Sequence, Set
 
 import torch
 from PIL import Image
@@ -37,6 +37,7 @@ logger = logging.getLogger(__name__)
 # ------------------------------------------------------------------
 # Configuration
 # ------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class MinerConfig:
@@ -75,6 +76,7 @@ class MinerConfig:
 # Core class
 # ------------------------------------------------------------------
 
+
 class PromptMiner:
     """Generates text-prompt candidates from cropped object images.
 
@@ -103,17 +105,15 @@ class PromptMiner:
 
     def __init__(
         self,
-        config: Optional[MinerConfig] = None,
-        device: Optional[str] = None,
+        config: MinerConfig | None = None,
+        device: str | None = None,
     ) -> None:
         self.config = config or MinerConfig()
         self.device = torch.device(
             device or ("cuda" if torch.cuda.is_available() else "cpu")
         )
 
-        logger.info(
-            "Loading VLM '%s' on %s", self.config.model_id, self.device
-        )
+        logger.info("Loading VLM '%s' on %s", self.config.model_id, self.device)
         from transformers import LlavaNextForConditionalGeneration, LlavaNextProcessor
 
         self._processor = LlavaNextProcessor.from_pretrained(self.config.model_id)
@@ -133,7 +133,7 @@ class PromptMiner:
         crop_paths: Sequence[str | Path],
         *,
         repeats: int = 1,
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate prompt candidates from a collection of image crops.
 
         Parameters
@@ -149,8 +149,8 @@ class PromptMiner:
         list of str
             De-duplicated candidate prompt strings, in discovery order.
         """
-        candidates: Set[str] = set()
-        ordered: List[str] = []
+        candidates: set[str] = set()
+        ordered: list[str] = []
 
         for idx, img_path in enumerate(crop_paths):
             try:
@@ -160,9 +160,7 @@ class PromptMiner:
                 continue
 
             for cycle in range(repeats):
-                question = self.config.questions[
-                    cycle % len(self.config.questions)
-                ]
+                question = self.config.questions[cycle % len(self.config.questions)]
                 desc = self._ask(image, question)
                 if desc and desc not in candidates:
                     candidates.add(desc)
@@ -183,12 +181,12 @@ class PromptMiner:
     # Private helpers
     # ------------------------------------------------------------------
 
-    def _ask(self, image: Image.Image, question: str) -> Optional[str]:
+    def _ask(self, image: Image.Image, question: str) -> str | None:
         """Pose *question* about *image* and return the cleaned answer."""
         text = self._PROMPT_TEMPLATE.format(question=question)
-        inputs = self._processor(
-            text=text, images=image, return_tensors="pt"
-        ).to(self.device)
+        inputs = self._processor(text=text, images=image, return_tensors="pt").to(
+            self.device
+        )
 
         with torch.inference_mode():
             output_ids = self._model.generate(
@@ -199,13 +197,11 @@ class PromptMiner:
                 top_p=self.config.top_p,
             )
 
-        decoded = self._processor.batch_decode(
-            output_ids, skip_special_tokens=True
-        )[0]
+        decoded = self._processor.batch_decode(output_ids, skip_special_tokens=True)[0]
         return self._clean(decoded)
 
     @classmethod
-    def _clean(cls, raw: str) -> Optional[str]:
+    def _clean(cls, raw: str) -> str | None:
         """Post-process a VLM response into a usable prompt fragment.
 
         Strips the instruction prefix, removes common filler phrases,

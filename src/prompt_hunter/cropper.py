@@ -8,10 +8,10 @@ visual analysis (prompt mining, feature extraction, etc.).
 from __future__ import annotations
 
 import json
-import os
 import random
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any
 
 import cv2
 import numpy as np
@@ -53,9 +53,9 @@ class InstanceCropper:
         self.image_root = Path(image_root)
         self.output_root = Path(output_root)
 
-        self._image_map: Dict[int, str] = {}
-        self._category_map: Dict[int, str] = {}
-        self._annotations: List[Dict[str, Any]] = []
+        self._image_map: dict[int, str] = {}
+        self._category_map: dict[int, str] = {}
+        self._annotations: list[dict[str, Any]] = []
         self._load_annotations()
 
     # ------------------------------------------------------------------
@@ -66,10 +66,10 @@ class InstanceCropper:
         self,
         target_class: str,
         *,
-        limit: Optional[int] = None,
+        limit: int | None = None,
         mode: str = "mining",
         seed: int = 42,
-    ) -> List[str]:
+    ) -> list[str]:
         """Crop instances of *target_class* and return saved file paths.
 
         Parameters
@@ -111,7 +111,7 @@ class InstanceCropper:
             rng.shuffle(matching)
             matching = matching[:limit]
 
-        saved_paths: List[str] = []
+        saved_paths: list[str] = []
         for ann in matching:
             img_id: int = ann["image_id"]
             file_name = self._image_map.get(img_id)
@@ -148,7 +148,7 @@ class InstanceCropper:
         return len(self._annotations)
 
     @property
-    def category_names(self) -> List[str]:
+    def category_names(self) -> list[str]:
         """Sorted list of category names in the annotation file."""
         return sorted(set(self._category_map.values()))
 
@@ -158,8 +158,8 @@ class InstanceCropper:
 
     def _load_annotations(self) -> None:
         """Parse the COCO JSON file into internal lookup structures."""
-        with open(self.annotation_path, "r", encoding="utf-8") as fh:
-            data: Dict[str, Any] = json.load(fh)
+        with open(self.annotation_path, encoding="utf-8") as fh:
+            data: dict[str, Any] = json.load(fh)
 
         self._image_map = {img["id"]: img["file_name"] for img in data["images"]}
         self._category_map = {cat["id"]: cat["name"] for cat in data["categories"]}
@@ -169,7 +169,7 @@ class InstanceCropper:
     def _extract_crop(
         image: np.ndarray,
         bbox: Sequence[float],
-    ) -> Optional[np.ndarray]:
+    ) -> np.ndarray | None:
         """Extract a bounding-box crop, clamped to image boundaries.
 
         Parameters

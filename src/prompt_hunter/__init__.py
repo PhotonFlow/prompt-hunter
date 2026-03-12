@@ -22,9 +22,9 @@ Typical usage::
 from __future__ import annotations
 
 from prompt_hunter.cropper import InstanceCropper
-from prompt_hunter.miner import PromptMiner
 from prompt_hunter.evaluator import PromptEvaluator
 from prompt_hunter.hunter import PromptHunter
+from prompt_hunter.miner import PromptMiner
 
 __all__ = [
     "InstanceCropper",

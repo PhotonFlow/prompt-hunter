@@ -23,9 +23,9 @@ p10_conf ↓).
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
+from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Sequence
 
 import numpy as np
 import torch
@@ -37,6 +37,7 @@ logger = logging.getLogger(__name__)
 # ------------------------------------------------------------------
 # Result container
 # ------------------------------------------------------------------
+
 
 @dataclass
 class EvaluationResult:
@@ -69,6 +70,7 @@ class EvaluationResult:
 # Configuration
 # ------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class EvaluatorConfig:
     """Knobs for prompt evaluation.
@@ -100,6 +102,7 @@ class EvaluatorConfig:
 # Core class
 # ------------------------------------------------------------------
 
+
 class PromptEvaluator:
     """Scores prompt candidates using an open-vocabulary grounding model.
 
@@ -127,8 +130,8 @@ class PromptEvaluator:
 
     def __init__(
         self,
-        config: Optional[EvaluatorConfig] = None,
-        device: Optional[str] = None,
+        config: EvaluatorConfig | None = None,
+        device: str | None = None,
     ) -> None:
         self.config = config or EvaluatorConfig()
         self.device = torch.device(
@@ -156,7 +159,7 @@ class PromptEvaluator:
         self,
         crop_paths: Sequence[str | Path],
         candidates: Sequence[str],
-    ) -> List[EvaluationResult]:
+    ) -> list[EvaluationResult]:
         """Score and rank prompt candidates against validation crops.
 
         Parameters
@@ -187,9 +190,7 @@ class PromptEvaluator:
                 scores[prompt].append(best)
 
             if (idx + 1) % 10 == 0:
-                logger.info(
-                    "Evaluated %d/%d images", idx + 1, len(crop_paths)
-                )
+                logger.info("Evaluated %d/%d images", idx + 1, len(crop_paths))
 
         # Aggregate and rank
         results = self._aggregate(scores)
@@ -199,9 +200,7 @@ class PromptEvaluator:
     # Private helpers
     # ------------------------------------------------------------------
 
-    def _detect_best_score(
-        self, image: Image.Image, prompt: str
-    ) -> float:
+    def _detect_best_score(self, image: Image.Image, prompt: str) -> float:
         """Run detection and return the best confidence score (or 0)."""
         clean = prompt.strip().lower()
         if not clean.endswith("."):
@@ -230,11 +229,9 @@ class PromptEvaluator:
             return float(det_scores.max().item())
         return 0.0
 
-    def _aggregate(
-        self, scores: dict[str, list[float]]
-    ) -> List[EvaluationResult]:
+    def _aggregate(self, scores: dict[str, list[float]]) -> list[EvaluationResult]:
         """Convert raw per-image scores into ranked EvaluationResults."""
-        results: List[EvaluationResult] = []
+        results: list[EvaluationResult] = []
 
         for prompt, vals in scores.items():
             arr = np.asarray(vals, dtype=np.float64)
@@ -243,9 +240,7 @@ class PromptEvaluator:
 
             result = EvaluationResult(
                 prompt=prompt,
-                success_rate=float(
-                    np.mean(arr > self.config.failure_threshold)
-                ),
+                success_rate=float(np.mean(arr > self.config.failure_threshold)),
                 avg_confidence=float(arr.mean()),
                 p10_confidence=float(np.percentile(arr, 10)),
                 min_confidence=float(arr.min()),

@@ -27,7 +27,6 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Sequence
 
 from prompt_hunter.cropper import InstanceCropper
 from prompt_hunter.evaluator import EvaluationResult, EvaluatorConfig, PromptEvaluator
@@ -95,10 +94,10 @@ class PromptHunter:
     committing GPU memory.
     """
 
-    def __init__(self, config: Optional[HuntConfig] = None) -> None:
+    def __init__(self, config: HuntConfig | None = None) -> None:
         self.config = config or HuntConfig()
-        self._miner: Optional[PromptMiner] = None
-        self._evaluator: Optional[PromptEvaluator] = None
+        self._miner: PromptMiner | None = None
+        self._evaluator: PromptEvaluator | None = None
 
     def hunt(
         self,
@@ -106,9 +105,9 @@ class PromptHunter:
         image_root: str | Path,
         target_class: str,
         *,
-        val_annotation_path: Optional[str | Path] = None,
-        val_image_root: Optional[str | Path] = None,
-    ) -> List[EvaluationResult]:
+        val_annotation_path: str | Path | None = None,
+        val_image_root: str | Path | None = None,
+    ) -> list[EvaluationResult]:
         """Run the full prompt hunting pipeline.
 
         Parameters
@@ -167,9 +166,7 @@ class PromptHunter:
         )
 
         if not eval_crops:
-            logger.warning(
-                "No validation crops; falling back to mining crops"
-            )
+            logger.warning("No validation crops; falling back to mining crops")
             eval_crops = mining_crops
 
         evaluator = self._get_evaluator()

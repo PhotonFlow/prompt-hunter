@@ -24,7 +24,6 @@ from __future__ import annotations
 
 import argparse
 import logging
-import sys
 from pathlib import Path
 
 from prompt_hunter.evaluator import EvaluatorConfig
@@ -183,9 +182,9 @@ def main(argv: list[str] | None = None) -> None:
 
     # Format output
     lines = [
-        f"{'='*60}",
+        f"{'=' * 60}",
         f"  PROMPT HUNTING RESULTS — class: {args.target_class!r}",
-        f"{'='*60}",
+        f"{'=' * 60}",
         "",
     ]
     for rank, r in enumerate(results, start=1):
@@ -195,7 +194,7 @@ def main(argv: list[str] | None = None) -> None:
         lines.append(f"    Avg Confidence:   {r.avg_confidence:.4f}")
         lines.append(f"    P10 Confidence:   {r.p10_confidence:.4f}")
         lines.append(f"    Min Confidence:   {r.min_confidence:.4f}")
-        lines.append(f"  {'-'*40}")
+        lines.append(f"  {'-' * 40}")
 
     output_text = "\n".join(lines)
 
